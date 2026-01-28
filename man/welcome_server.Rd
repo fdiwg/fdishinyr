@@ -9,7 +9,7 @@ welcome_server(id, lang = NULL)
 \arguments{
 \item{id}{id}
 
-\item{lang}{lang a reactive version of the language}
+\item{lang}{lang a reactive version of the language. Default is \code{NULL} (optional)}
 }
 \description{
 POC shiny module server
