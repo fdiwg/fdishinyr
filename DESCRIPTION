@@ -1,0 +1,20 @@
+Package: fdishinyr
+Version: 0.1
+Date: 2026-01-28
+Title: FDI Shiny utils
+Authors@R: c(
+  person("Emmanuel", "Blondel", role = c("aut", "cre"), email = "emmanuel.blondel1@gmail.com", comment = c(ORCID = "0000-0002-5870-5762")))
+Maintainer: Emmanuel Blondel <emmanuel.blondel1@gmail.com>
+Depends: R (>= 4.0)
+Imports:
+  shiny,
+  shiny.i18n,
+  bs4Dash
+Suggests: roxygen2, testthat
+Description: FDI Shiny utils
+URL: https://github.com/fdiwg/fdishinyr
+BugReports: https://github.com/fdiwg/fdishinyr/issues
+LazyLoad: yes
+Encoding: UTF-8
+RoxygenNote: 7.3.3
+Roxygen: list(r6 = TRUE)
