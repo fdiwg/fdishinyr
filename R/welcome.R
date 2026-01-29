@@ -24,7 +24,7 @@ welcome_server <- function(id, lang = NULL){
       i18n_translator()$t(key)
     }
     
-    output$main <- renderUI({
+    output$main_fdishinyr <- renderUI({
       bs4Dash::box(
         title = i18n("WELCOME"),
         width = 12,
@@ -43,5 +43,5 @@ welcome_server <- function(id, lang = NULL){
 #'@export
 welcome_ui <- function(id) {
   ns <- NS(id)
-  uiOutput(ns("main"))
+  uiOutput(ns("main_fdishinyr"))
 }
