@@ -31,6 +31,7 @@ welcome_server <- function(id, lang = NULL){
         title = i18n("WELCOME"),
         width = 12,
         status = "primary",
+        solidHeader = TRUE,
         tags$p(i18n("WELCOME_PARAGRAPH"))
       )
     })
