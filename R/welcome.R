@@ -9,6 +9,8 @@ welcome_server <- function(id, lang = NULL){
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
+    INFO("Welcome server - START")
+    
     #i18n translation mechanism
     #functional for both static language set-up (lang = NULL) or dynamic language set-up
     #(case where the language is passed as reactive)
@@ -24,7 +26,7 @@ welcome_server <- function(id, lang = NULL){
       i18n_translator()$t(key)
     }
     
-    output$main_fdishinyr <- renderUI({
+    output$main <- renderUI({
       bs4Dash::box(
         title = i18n("WELCOME"),
         width = 12,
@@ -32,6 +34,9 @@ welcome_server <- function(id, lang = NULL){
         tags$p(i18n("WELCOME_PARAGRAPH"))
       )
     })
+    
+    INFO("Welcome server - END")
+    
   })
   
 }
@@ -43,5 +48,5 @@ welcome_server <- function(id, lang = NULL){
 #'@export
 welcome_ui <- function(id) {
   ns <- NS(id)
-  uiOutput(ns("main_fdishinyr"))
+  uiOutput(ns("main"))
 }
