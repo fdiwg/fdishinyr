@@ -16,7 +16,7 @@ welcome_server <- function(id, lang = NULL){
     #(case where the language is passed as reactive)
     i18n_translator <- reactive({
       if(is.reactive(lang)) set_translation_language(lang())
-      print(sprintf("Welcome to fdishinyr ecosystem in lang '%s'", translator()$get_translation_language()))
+      INFO("Welcome to fdishinyr ecosystem in lang '%s'", translator()$get_translation_language())
       translator()
     })
     
