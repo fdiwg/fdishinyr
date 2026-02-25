@@ -3,6 +3,8 @@
 export(ERROR)
 export(INFO)
 export(WARN)
+export(generic_chart_server)
+export(generic_chart_ui)
 export(logger)
 export(set_translation_language)
 export(translator)
