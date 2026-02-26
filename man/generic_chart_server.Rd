@@ -50,8 +50,7 @@ Default is \code{"Value"}.}
 \item{group_label}{Character string used as label for grouping variables.
 Default is \code{"Group"}.}
 
-\item{plot_types}{Optional character vector restricting the set of plot types
-available to the user.
+\item{plot_types}{Optional character vector restricting the set of plot types available to the user.
 
 Supported values are:
 \itemize{

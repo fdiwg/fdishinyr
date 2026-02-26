@@ -46,8 +46,7 @@
 #' @param group_label Character string used as label for grouping variables.
 #' Default is \code{"Group"}.
 #'
-#' @param plot_types Optional character vector restricting the set of plot types
-#' available to the user.
+#' @param plot_types Optional character vector restricting the set of plot types available to the user.
 #'
 #' Supported values are:
 #' \itemize{
@@ -94,6 +93,7 @@
 #'   \item \code{"ci95"}
 #' }
 #' Default is \code{"none"}.
+#' 
 #'@export
 
 generic_chart_server <- function(
@@ -110,7 +110,7 @@ generic_chart_server <- function(
     plot_type_default = NULL,
     time_choices = c("month","year"),
     stat = "sum",    
-    error = "none"  
+    error = "none"
   ){
   
   moduleServer(id, function(input, output, session) {
@@ -430,9 +430,9 @@ generic_chart_server <- function(
       
       if (style == "rank_sum") {
         req(stat == "sum")
-        
+
         top_n <- 10
-        
+
         d_rank <- d_full %>%
           group_by(group) %>%
           summarise(
@@ -446,7 +446,7 @@ generic_chart_server <- function(
             pct  = value / sum(value, na.rm = TRUE)
           ) %>%
           slice_head(n = top_n)
-        
+
         p <- plotly::plot_ly(
           data = d_rank,
           x = ~value,
@@ -480,7 +480,7 @@ generic_chart_server <- function(
             plot_bgcolor  = "rgba(0,0,0,0)",
             paper_bgcolor = "rgba(0,0,0,0)"
           )
-        
+
         return(p)
       }
       
@@ -508,14 +508,14 @@ generic_chart_server <- function(
         
         d_full$period <- factor(d_full$period, levels = sort(unique(d_full$period)))
         p <- plotly::plot_ly(d_full, x = ~period, y = ~group, z = ~value, type = "heatmap", colorscale = list(list(0,"#053061"), list(0.5,"#92C5DE"), list(0.9,"#FFFFBF"), list(1,"#F46D43")), reversescale = FALSE, zauto = TRUE, showscale = TRUE)
-      } else if (style == "bubble") {
-        d_b <- d_full %>% mutate(display_value = ifelse(is.na(value), 0, value))
-        maxv <- max(d_b$display_value, na.rm = TRUE)
-        sizeref <- ifelse(is.finite(maxv) && maxv > 0, 2 * maxv / (50^2), 1)
-        
-        d_b <- d_b %>% mutate(tooltip = paste0(group, "<br>", format(period_date, "%Y-%m-%d"), "<br>", ifelse(is.na(value), paste0("(",i18n("GENERIC_CHART_PLOT_BUBBLE_NO_DATA"),")"), format(round(value,2), nsmall=2))))
+       } else if (style == "bubble") {
+         d_b <- d_full %>% mutate(display_value = ifelse(is.na(value), 0, value))
+         maxv <- max(d_b$display_value, na.rm = TRUE)
+         sizeref <- ifelse(is.finite(maxv) && maxv > 0, 2 * maxv / (50^2), 1)
+      
+         d_b <- d_b %>% mutate(tooltip = paste0(group, "<br>", format(period_date, "%Y-%m-%d"), "<br>", ifelse(is.na(value), paste0("(",i18n("GENERIC_CHART_PLOT_BUBBLE_NO_DATA"),")"), format(round(value,2), nsmall=2))))
         p <- plotly::plot_ly(d_b, x = ~period_date, y = ~group, size = ~display_value, color = ~group, text = ~tooltip, hoverinfo = "text", type = "scatter", mode = "markers", marker = list(sizemode = "area", sizeref = sizeref, sizemin = 1))
-      } else if (style == "boxplot") {
+       } else if (style == "boxplot") {
         
         gran <- ifelse(is.null(input$granularity), "year", input$granularity)
         df_raw <- df %>%
