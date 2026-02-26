@@ -18,7 +18,10 @@ generic_chart_server(
   plot_type_default = NULL,
   time_choices = c("month", "year"),
   stat = "sum",
-  error = "none"
+  error = "none",
+  rank_number = 10,
+  rank_target_id = NULL,
+  rank_target_color = "orange"
 )
 }
 \arguments{
@@ -97,6 +100,21 @@ Supported values are:
   \item \code{"ci95"}
 }
 Default is \code{"none"}.}
+
+\item{rank_number}{Integer. Specific to \code{rank_sum} mode.
+Defines the number of ranked items to display.
+Default is \code{10}.}
+
+\item{rank_target_id}{Optional character string. Specific to \code{rank_sum} mode.
+Must match one of the values of the grouping column defined in \code{col_group}.
+If \code{NULL}, the chart displays the top \code{rank_number} ranked items.
+If provided, the chart centers the view around the targeted item and displays up to \code{rank_number} items around it.
+Default is \code{NULL}.}
+
+\item{rank_target_color}{Optional character string. Specific to \code{rank_sum} mode.
+Must be a valid R color name or hexadecimal color code.
+Defines the fill color used to highlight the targeted item specified in \code{rank_target_id}.
+Default is \code{"orange"}.}
 }
 \description{
 Server-side logic for a fully generic and configurable charting module.
