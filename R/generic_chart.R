@@ -325,6 +325,8 @@ generic_chart_server <- function(
         "none"
       }
       
+      if(nrow(df)==0)return(NULL)
+      
       df1 <- df %>%
         rename(
           date  = !!rlang::sym(col_date),
@@ -384,6 +386,8 @@ generic_chart_server <- function(
     
     plot_reactive <- reactive({
       d <- data_formatted()
+      
+      req(!is.null(d))
       req(nrow(d) > 0)
       
       style <- ifelse(
@@ -675,8 +679,13 @@ generic_chart_server <- function(
       tabsetPanel(
         tabPanel(
           i18n("GENERIC_CHART_TAB_TITLE_PLOT"), 
-          plotly::plotlyOutput(ns("plot")) %>% 
+          
+          if(is.null(data_formatted())){
+            HTML(paste0("(",i18n("GENERIC_CHART_NO_DATA"),")"))
+          }else{
+            plotly::plotlyOutput(ns("plot")) %>% 
             shinycssloaders::withSpinner(type = 4)
+          }
         ),
         tabPanel(
           i18n("GENERIC_CHART_TAB_TITLE_STATISTICS"), 
