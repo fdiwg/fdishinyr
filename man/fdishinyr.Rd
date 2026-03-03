@@ -2,8 +2,8 @@
 % Please edit documentation in R/fdishinyr.R
 \docType{package}
 \name{fdishinyr}
-\alias{fdishinyr}
 \alias{fdishinyr-package}
+\alias{fdishinyr}
 \title{FDI shiny utils}
 \description{
 FDI shiny utils
