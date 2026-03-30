@@ -185,7 +185,6 @@ generic_chart_server <- function(
       } else {
         return(c(mean = m, ymin = NA_real_, ymax = NA_real_))
       }
-      INFO("compute_stat - END")
     }
     
     # -------------------------------------------------------------------------
