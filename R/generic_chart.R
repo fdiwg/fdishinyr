@@ -161,7 +161,6 @@ generic_chart_server <- function(
     # - Ongoing development
     # -------------------------------------------------------------------------
     compute_stats <- function(x, error_type) {
-      INFO("compute_stat - START")
       x <- x[!is.na(x)]
       
       n <- length(x)
@@ -383,6 +382,7 @@ generic_chart_server <- function(
     # -------------------------------------------------------------------------
     
     plot_reactive <- reactive({
+      
       d <- data_formatted()
       
       req(!is.null(d))
