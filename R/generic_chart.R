@@ -287,7 +287,7 @@ generic_chart_server <- function(
           ns("granularity"),
           paste0(i18n("GENERIC_CHART_PLOT_GRANU_TITLE"), " :"),
           choices  = granu,
-          selected = granu[1]
+          selected = granu[2]
         )
       )
     })
