@@ -655,7 +655,7 @@ generic_chart_server <- function(
     # -------------------------------------------------------------------------
 
     output$plot <- plotly::renderPlotly({ 
-      plot_reactive()
+      plot_reactive() |> plotly::toWebGL()
       })
     
     # -------------------------------------------------------------------------
