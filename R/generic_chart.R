@@ -581,7 +581,7 @@ generic_chart_server <- function(
          maxv <- max(d_b$display_value, na.rm = TRUE)
          sizeref <- if(is.finite(maxv) && maxv > 0) 2 * maxv / (50^2) else 1
       
-         d_b <- d_b |> mutate(tooltip = paste0(group, "<br>", format(period_date, "%Y-%m-%d"), "<br>", if(is.na(value)) paste0("(",i18n("GENERIC_CHART_PLOT_BUBBLE_NO_DATA"),")") else format(round(value,2), nsmall=2)))
+         d_b <- d_b |> mutate(tooltip = paste0(group, "<br>", format(period_date, "%Y-%m-%d"), "<br>", ifelse(is.na(value), paste0("(",i18n("GENERIC_CHART_PLOT_BUBBLE_NO_DATA"),")"), format(round(value,2), nsmall=2))))
         p <- plotly::plot_ly(d_b, x = ~period_date, y = ~group, size = ~display_value, color = ~group, text = ~tooltip, hoverinfo = "text", type = "scatter", mode = "markers", marker = list(sizemode = "area", sizeref = sizeref, sizemin = 1))
        } else if (style == "boxplot") {
         
