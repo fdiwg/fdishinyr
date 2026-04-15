@@ -331,18 +331,17 @@ generic_chart_server <- function(
           date  = !!rlang::sym(col_date),
           group = !!rlang::sym(col_group),
           raw_value = !!rlang::sym(col_value)   
-        ) |>
-        mutate(date = as.Date(date),
-          period_date = dplyr::case_when(
-            gran == "year"  ~ as.Date(paste0(format(date, "%Y"), "-01-01")),
-            gran == "month" ~ as.Date(paste0(format(date, "%Y-%m"), "-01"))
-          ),
-          period = ifelse(
-            gran == "year", 
-            format(period_date, "%Y"), 
-            format(period_date, "%Y-%m")
-          )
         )
+      switch(gran,
+             "year" = {
+               df1$period_date = as.Date(paste0(format(df1$date, "%Y"), "-01-01"))
+               df1$period = format(df1$period_date, "%Y")
+             },
+             "month" = {
+               df1$period_date = as.Date(paste0(format(df1$date, "%Y-%m"), "-01"))
+               df1$period = format(df1$period_date, "%Y-%m")
+             }
+      )
       
       # Sum aggregation
       if (stat == "sum") {
