@@ -662,13 +662,13 @@ generic_chart_server <- function(
     # Tabular view (pivoted by group)
     # -------------------------------------------------------------------------
     
-    output$table <- DT::renderDT({
-      dtab <- data_formatted()
-      req("value" %in% names(dtab))
-      
-      dtab |> tidyr::pivot_wider(names_from = group, values_from = value) |>
-        DT::datatable(extensions = "Buttons", options = list(dom = "Bfrtip"))
-      })
+    # output$table <- DT::renderDT({
+    #   dtab <- data_formatted()
+    #   req("value" %in% names(dtab))
+    #   
+    #   dtab |> tidyr::pivot_wider(names_from = group, values_from = value) |>
+    #     DT::datatable(extensions = "Buttons", options = list(dom = "Bfrtip"))
+    #   })
     
     # -------------------------------------------------------------------------
     # Main box content UI (plot + table)
@@ -687,9 +687,9 @@ generic_chart_server <- function(
           }
         ),
         tabPanel(
-          i18n("GENERIC_CHART_TAB_TITLE_STATISTICS"), 
-          DT::DTOutput(ns("table")) |> 
-            shinycssloaders::withSpinner(type = 4)
+          i18n("GENERIC_CHART_TAB_TITLE_STATISTICS") 
+          # DT::DTOutput(ns("table")) |> 
+          #   shinycssloaders::withSpinner(type = 4)
         )
       )
     })
