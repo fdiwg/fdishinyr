@@ -316,7 +316,7 @@ generic_chart_server <- function(
     
     data_formatted <- reactive({
       req(df)
-      gran <- if(is.null(input$granularity)) "year" else input$granularity
+      gran <- ifelse(is.null(input$granularity), "year", input$granularity)
       err_type <- if (stat == "mean") {
         if (!is.null(input$error_type)) input$error_type else error
       } else {
@@ -388,11 +388,11 @@ generic_chart_server <- function(
       req(!is.null(d))
       req(nrow(d) > 0)
       
-      style <- if(is.null(input$plot_style)){ 
-        if(is.null(plot_type_default)) names(plot_type_choices)[1] else plot_type_default 
-      }else{
+      style <- ifelse(
+        is.null(input$plot_style), 
+        if(is.null(plot_type_default)) names(plot_type_choices)[1] else plot_type_default, 
         input$plot_style
-      }
+      )
       
       # Axis labels depending on plot family
       if (style %in% c("line","line_sum","line_mean","area_stack","area_stack_pct","bar_mean","bar_stack","bar_stack_pct")) {
@@ -426,14 +426,11 @@ generic_chart_server <- function(
       
       stacked_modes <- c("bar_stack","bar_stack_pct","area_stack","area_stack_pct")
       d_plot <- d_full
-      if (style %in% stacked_modes) d_plot$value <- if(is.na(d_plot$value)) 0 else d_plot$value
+      if (style %in% stacked_modes) d_plot$value <- ifelse(is.na(d_plot$value), 0, d_plot$value)
       
       needs_group_aggregation <- style %in% c("line_sum", "line_mean", "bar_mean")
-      aggregator <- if(style %in% c("line_sum","area_stack","bar_stack","bar_stack_pct","area_stack_pct")){
-        "sum"
-      }else{
-        if(style %in% c("line_mean","bar_mean")) "mean" else NA_character_
-      }
+      aggregator <- ifelse(style %in% c("line_sum","area_stack","bar_stack","bar_stack_pct","area_stack_pct"), "sum",
+                           ifelse(style %in% c("line_mean","bar_mean"), "mean", NA_character_))
       
       if (style %in% c("pie","donut","treemap")) {
         d_synth <- d_full |>
@@ -579,13 +576,13 @@ generic_chart_server <- function(
        } else if (style == "bubble") {
          d_b <- d_full |> mutate(display_value = ifelse(is.na(value), 0, value))
          maxv <- max(d_b$display_value, na.rm = TRUE)
-         sizeref <- if(is.finite(maxv) && maxv > 0) 2 * maxv / (50^2) else 1
+         sizeref <- ifelse(is.finite(maxv) && maxv > 0, 2 * maxv / (50^2), 1)
       
          d_b <- d_b |> mutate(tooltip = paste0(group, "<br>", format(period_date, "%Y-%m-%d"), "<br>", ifelse(is.na(value), paste0("(",i18n("GENERIC_CHART_PLOT_BUBBLE_NO_DATA"),")"), format(round(value,2), nsmall=2))))
         p <- plotly::plot_ly(d_b, x = ~period_date, y = ~group, size = ~display_value, color = ~group, text = ~tooltip, hoverinfo = "text", type = "scatter", mode = "markers", marker = list(sizemode = "area", sizeref = sizeref, sizemin = 1))
        } else if (style == "boxplot") {
         
-        gran <- if(is.null(input$granularity)) "year" else input$granularity
+        gran <- ifelse(is.null(input$granularity), "year", input$granularity)
         df_raw <- df |>
           rename(date = !!rlang::sym(col_date), group = !!rlang::sym(col_group), raw_value = !!rlang::sym(col_value)) |>
           mutate(date = as.Date(date),
