@@ -1,6 +1,6 @@
 Package: fdishinyr
-Version: 0.1.20260415
-Date: 2026-04-15
+Version: 0.1.20260529
+Date: 2026-05-29
 Title: FDI Shiny utils
 Authors@R: c(
   person("Emmanuel", "Blondel", role = c("aut", "cre"), email = "emmanuel.blondel1@gmail.com", comment = c(ORCID = "0000-0002-5870-5762")),
@@ -10,7 +10,9 @@ Depends: R (>= 4.1)
 Imports:
   shiny,
   shiny.i18n,
-  bs4Dash
+  bs4Dash,
+  rlang,
+  dplyr
 Suggests: roxygen2, testthat
 Description: FDI Shiny utils
 URL: https://github.com/fdiwg/fdishinyr

@@ -25,5 +25,5 @@ The UI provides:
 }
 
 This UI is designed to work with \code{generic_chart_server} and relies on
-\code{bs4Dash} layout components.
+\code{bs4Dash} plotly::layout components.
 }
