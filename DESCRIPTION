@@ -17,6 +17,7 @@ Suggests: roxygen2, testthat
 Description: FDI Shiny utils
 URL: https://github.com/fdiwg/fdishinyr
 BugReports: https://github.com/fdiwg/fdishinyr/issues
+License: MIT + file LICENSE
 LazyLoad: yes
 Encoding: UTF-8
 RoxygenNote: 7.3.3
