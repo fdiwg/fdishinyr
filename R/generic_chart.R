@@ -665,9 +665,18 @@ generic_chart_server <- function(
       dtab <- data_formatted()
       req("value" %in% names(dtab))
       
-      dtab |> tidyr::pivot_wider(names_from = group, values_from = value) |>
-        DT::datatable(extensions = "Buttons", options = list(dom = "Bfrtip"))
-      })
+      dtab |> tidyr::pivot_wider(
+        names_from = group,
+        values_from = value
+      ) |> DT::datatable(
+        extensions = "Buttons",
+        options = list(
+          dom = "Bfrtip",
+          buttons = c("copy", "csv", "excel","pdf")
+        )
+      )
+    
+    },server = FALSE)
     
     # -------------------------------------------------------------------------
     # Main box content UI (plot + table)
