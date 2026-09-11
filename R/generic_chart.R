@@ -345,9 +345,9 @@ generic_chart_server <- function(
       # Sum aggregation
       if (stat == "sum") {
         df_agg <- df1 |>
-          dplyr::group_by(period_date, period, group) |>
-          dplyr::summarise(value = sum(raw_value, na.rm = TRUE), .groups = "drop") |>
-          dplyr::arrange(period_date, group)
+          dplyr::group_by(dplyr::across(dplyr::all_of(c("period_date", "period", "group")))) |>
+          dplyr::summarise(value = sum(.data$raw_value, na.rm = TRUE), .groups = "drop") |>
+          dplyr::arrange(.data$period_date, .data$group)
         
         df_agg$ymin <- NA_real_
         df_agg$ymax <- NA_real_
@@ -356,20 +356,20 @@ generic_chart_server <- function(
       
       # Mean + error aggregation
       df_stats <- df1 |>
-        dplyr::group_by(period_date, period, group) |>
-        dplyr::summarise(raws = list(raw_value), .groups = "drop") 
+        dplyr::group_by(dplyr::across(dplyr::all_of(c("period_date", "period", "group")))) |>
+        dplyr::summarise(raws = list(.data$raw_value), .groups = "drop") 
       
       df_stats <- df_stats |>
         rowwise() |>
         dplyr::mutate(
-          st = list(compute_stats(unlist(raws), err_type)),
-          value = as.numeric(st["mean"]),
-          ymin  = as.numeric(st["ymin"]),
-          ymax  = as.numeric(st["ymax"])
+          st = list(compute_stats(unlist(.data$raws), err_type)),
+          value = as.numeric(.data$st["mean"]),
+          ymin  = as.numeric(.data$st["ymin"]),
+          ymax  = as.numeric(.data$st["ymax"])
         ) |>
         dplyr::ungroup() |>
-        dplyr::select(period_date, period, group, value, ymin, ymax) |>
-        dplyr::arrange(period_date, group)
+        dplyr::select(c("period_date", "period", "group", "value", "ymin", "ymax")) |>
+        dplyr::arrange(.data$period_date, .data$group)
       
       return(df_stats)
     })
@@ -415,12 +415,12 @@ generic_chart_server <- function(
       all_groups <- sort(unique(d$group))
       full_grid <- expand.grid(period_date = full_seq, group = all_groups, stringsAsFactors = FALSE)
       d_full <- merge(full_grid, d, by = c("period_date", "group"), all.x = TRUE) |> 
-                  dplyr::arrange(period_date, group) |>
+                  dplyr::arrange(.data$period_date, .data$group) |>
                   dplyr::mutate(
                     period = ifelse(
-                      format(period_date, "%m") == "01", 
-                      format(period_date, "%Y"), 
-                      format(period_date, "%Y-%m")
+                      format(.data$period_date, "%m") == "01", 
+                      format(.data$period_date, "%Y"), 
+                      format(.data$period_date, "%Y-%m")
                     )
                   )
       
@@ -434,13 +434,13 @@ generic_chart_server <- function(
       
       if (style %in% c("pie","donut","treemap")) {
         d_synth <- d_full |>
-          dplyr::group_by(group) |>
-          dplyr::summarise(value = if (stat == "sum") sum(value, na.rm = TRUE) else mean(value, na.rm = TRUE), .groups = "drop")
+          dplyr::group_by(.data$group) |>
+          dplyr::summarise(value = if (stat == "sum") sum(.data$value, na.rm = TRUE) else mean(.data$value, na.rm = TRUE), .groups = "drop")
         
         if (style == "pie") {
-          p <- plotly::plot_ly(d_synth, labels = ~group, values = ~value, type = "pie")
+          p <- plotly::plot_ly(d_synth, labels = ~group, values = ~ value, type = "pie")
         } else if (style == "donut") {
-          p <- plotly::plot_ly(d_synth, labels = ~group, values = ~value, type = "pie", hole = 0.6)
+          p <- plotly::plot_ly(d_synth, labels = ~group, values = ~ value, type = "pie", hole = 0.6)
         } else {
           p <- plotly::plot_ly(d_synth, type = "treemap", labels = ~group, parents = NA, values = ~value, textinfo = "label+value+percent parent")
         }
@@ -452,16 +452,16 @@ generic_chart_server <- function(
         
         # Global ranking
         d_rank_all <- d_full |>
-          dplyr::group_by(group) |>
+          dplyr::group_by(.data$group) |>
           dplyr::summarise(
-            value = sum(value, na.rm = TRUE),
+            value = sum(.data$value, na.rm = TRUE),
             .groups = "drop"
           ) |>
-          dplyr::filter(!is.na(value)) |>
-          dplyr::arrange(desc(value)) |>
+          dplyr::filter(!is.na(.data$value)) |>
+          dplyr::arrange(desc(.data$value)) |>
           dplyr::mutate(
             rank = row_number(),
-            pct  = value / sum(value, na.rm = TRUE)
+            pct  = .data$value / sum(.data$value, na.rm = TRUE)
           )
         
         # Selection logic
@@ -477,7 +477,7 @@ generic_chart_server <- function(
           req(rank_target_id %in% d_rank_all$group)
           
           target_rank <- d_rank_all |>
-            dplyr::filter(group == rank_target_id) |>
+            dplyr::filter(.data$group == rank_target_id) |>
             dplyr::pull(rank)
           
           half_window <- floor(rank_number / 2)
@@ -491,7 +491,7 @@ generic_chart_server <- function(
           }
           
           d_rank <- d_rank_all |>
-            dplyr::filter(rank >= start_rank & rank <= end_rank)
+            dplyr::filter(.data$rank >= start_rank & .data$rank <= end_rank)
         }
         
         # Color mapping (highlight target if needed)
@@ -504,9 +504,9 @@ generic_chart_server <- function(
           d_rank <- d_rank |>
             dplyr::mutate(
               bar_color = if_else(
-                group == rank_target_id,
+                .data$group == rank_target_id,
                 rank_target_color,
-                bar_color
+                .data$bar_color
               )
             )
         }
@@ -553,10 +553,10 @@ generic_chart_server <- function(
         
         p <- plotly::plot_ly(d_full, x = ~period_date, y = ~value, color = ~group, type = "scatter", mode = "lines+markers", connectgaps = FALSE)
       } else if (style == "line_sum") {
-        d_agg <- d_full |> dplyr::group_by(period_date) |> dplyr::summarise(value = sum(value, na.rm = TRUE), .groups = "drop")
+        d_agg <- d_full |> dplyr::group_by(.data$period_date) |> dplyr::summarise(value = sum(.data$value, na.rm = TRUE), .groups = "drop")
         p <- plotly::plot_ly(d_agg, x = ~period_date, y = ~value, type = "scatter", mode = "lines+markers")
       } else if (style == "line_mean") {
-        d_agg <- d_full |> dplyr::group_by(period_date) |> dplyr::summarise(value = mean(value, na.rm = TRUE), ymin = min(ymin, na.rm = TRUE), ymax = max(ymax, na.rm = TRUE), .groups = "drop")
+        d_agg <- d_full |> dplyr::group_by(.data$period_date) |> dplyr::summarise(value = mean(.data$value, na.rm = TRUE), ymin = min(.data$ymin, na.rm = TRUE), ymax = max(.data$ymax, na.rm = TRUE), .groups = "drop")
         
         p <- plotly::plot_ly(data= d_agg,x = ~period_date, y = ~value, type = "scatter", name="mean",mode = "lines+markers", connectgaps = FALSE) |>
           plotly::add_ribbons(data = d_agg, x = ~period_date, ymin = ~ymin, ymax = ~ymax, fillcolor = "rgba(0,0,150,0.15)", line = list(color = "rgba(0,0,0,0)"), name = "error")
@@ -564,7 +564,7 @@ generic_chart_server <- function(
         p <- plotly::plot_ly(d_plot, x = ~period_date, y = ~value, color = ~group, type = "bar") |> plotly::layout(barmode = "stack")
         if (style == "bar_stack_pct") p <- p |> plotly::layout(barnorm = "percent", yaxis = list(ticksuffix = "%"))
       } else if (style == "bar_mean") {
-        d_agg <- d_full |> dplyr::group_by(period_date) |> dplyr::summarise(value = mean(value, na.rm = TRUE), ymin = min(ymin, na.rm = TRUE), ymax = max(ymax, na.rm = TRUE), .groups = "drop")
+        d_agg <- d_full |> dplyr::group_by(.data$period_date) |> dplyr::summarise(value = mean(.data$value, na.rm = TRUE), ymin = min(.data$ymin, na.rm = TRUE), ymax = max(.data$ymax, na.rm = TRUE), .groups = "drop")
         p <- plotly::plot_ly(d_agg, x = ~period_date, y = ~value, type = "bar", error_y = list(type = "data", array = ~ (ymax - value), arrayminus = ~(value - ymin), visible = TRUE))
       } else if (style %in% c("area_stack","area_stack_pct")) {
         groupnorm_val <- if (style == "area_stack_pct") "percent" else NULL
@@ -574,28 +574,28 @@ generic_chart_server <- function(
         d_full$period <- factor(d_full$period, levels = sort(unique(d_full$period)))
         p <- plotly::plot_ly(d_full, x = ~period, y = ~group, z = ~value, type = "heatmap", colorscale = list(list(0,"#053061"), list(0.5,"#92C5DE"), list(0.9,"#FFFFBF"), list(1,"#F46D43")), reversescale = FALSE, zauto = TRUE, showscale = TRUE)
        } else if (style == "bubble") {
-         d_b <- d_full |> dplyr::mutate(display_value = ifelse(is.na(value), 0, value))
+         d_b <- d_full |> dplyr::mutate(display_value = ifelse(is.na(.data$value), 0, .data$value))
          maxv <- max(d_b$display_value, na.rm = TRUE)
          sizeref <- ifelse(is.finite(maxv) && maxv > 0, 2 * maxv / (50^2), 1)
       
-         d_b <- d_b |> dplyr::mutate(tooltip = paste0(group, "<br>", format(period_date, "%Y-%m-%d"), "<br>", ifelse(is.na(value), paste0("(",i18n("GENERIC_CHART_PLOT_BUBBLE_NO_DATA"),")"), format(round(value,2), nsmall=2))))
+         d_b <- d_b |> dplyr::mutate(tooltip = paste0(.data$group, "<br>", format(.data$period_date, "%Y-%m-%d"), "<br>", ifelse(is.na(.data$value), paste0("(",i18n("GENERIC_CHART_PLOT_BUBBLE_NO_DATA"),")"), format(round(.data$value,2), nsmall=2))))
         p <- plotly::plot_ly(d_b, x = ~period_date, y = ~group, size = ~display_value, color = ~group, text = ~tooltip, hoverinfo = "text", type = "scatter", mode = "markers", marker = list(sizemode = "area", sizeref = sizeref, sizemin = 1))
        } else if (style == "boxplot") {
         
         gran <- ifelse(is.null(input$granularity), "year", input$granularity)
         df_raw <- df |>
           rename(date = !!rlang::sym(col_date), group = !!rlang::sym(col_group), raw_value = !!rlang::sym(col_value)) |>
-          dplyr::mutate(date = as.Date(date),
-                 period_date = if (gran == "year") as.Date(paste0(format(date, "%Y"), "-01-01")) else as.Date(paste0(format(date, "%Y-%m"), "-01"))
+          dplyr::mutate(date = as.Date(.data$date),
+                 period_date = if (gran == "year") as.Date(paste0(format(.data$date, "%Y"), "-01-01")) else as.Date(paste0(format(.data$date, "%Y-%m"), "-01"))
           ) |>
-          dplyr::filter(group %in% all_groups)
+          dplyr::filter(.data$group %in% all_groups)
         p <- plotly::plot_ly(df_raw, x = ~group, y = ~raw_value, type = "box", color = ~group, boxpoints = "all", jitter = 0.5, pointpos = 0)
       } else {
         p <- plotly::plot_ly() 
       }
       
       if (style == "heatmap") {
-        p<-p |> plotly::layout(xaxis = list(title = xlab), yaxis = list(title = ylab), hovermode = "x unified")
+        p<-p |> plotly::layout(xaxis = list(title = .data$xlab), yaxis = list(title = .data$ylab), hovermode = "x unified")
       } else {
         
         if (input$granularity == "year") {
@@ -665,7 +665,7 @@ generic_chart_server <- function(
       dtab <- data_formatted()
       req("value" %in% names(dtab))
       
-      dtab |> tidyr::pivot_wider(names_from = group, values_from = value) |>
+      dtab |> tidyr::pivot_wider(names_from = .data$group, values_from = .data$value) |>
         DT::datatable(extensions = "Buttons", options = list(dom = "Bfrtip"))
       })
     

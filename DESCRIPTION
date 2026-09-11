@@ -10,10 +10,15 @@ Depends: R (>= 4.1)
 Imports:
   shiny,
   shiny.i18n,
+  shinycssloaders,
   bs4Dash,
   rlang,
   dplyr,
-  plotly
+  plotly,
+  scales,
+  DT,
+  htmlwidgets,
+  tidyr
 Suggests: roxygen2, testthat
 Description: Set of common widgets in support to FDI shiny applications.
 URL: https://github.com/fdiwg/fdishinyr, https://fdiwg.github.io/fdishinyr/
