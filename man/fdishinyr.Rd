@@ -6,12 +6,13 @@
 \alias{fdishinyr}
 \title{FDI shiny utils}
 \description{
-FDI shiny utils
+fdishinyr provides common widgets for use with shiny.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/fdiwg/fdishinyr}
+  \item \url{https://fdiwg.github.io/fdishinyr/}
   \item Report bugs at \url{https://github.com/fdiwg/fdishinyr/issues}
 }
 

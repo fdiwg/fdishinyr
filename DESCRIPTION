@@ -1,7 +1,7 @@
 Package: fdishinyr
-Version: 0.1.20260529
-Date: 2026-05-29
-Title: FDI Shiny utils
+Version: 0.1.20260911
+Date: 2026-09-11
+Title: FDI Shiny Utils
 Authors@R: c(
   person("Emmanuel", "Blondel", role = c("aut", "cre"), email = "emmanuel.blondel1@gmail.com", comment = c(ORCID = "0000-0002-5870-5762")),
   person("Alexandre", "Bennici", role = c("aut"), comment = c(ORCID = "0000-0003-2160-3487")))
@@ -12,10 +12,11 @@ Imports:
   shiny.i18n,
   bs4Dash,
   rlang,
-  dplyr
+  dplyr,
+  plotly
 Suggests: roxygen2, testthat
-Description: FDI Shiny utils
-URL: https://github.com/fdiwg/fdishinyr
+Description: Set of common widgets in support to FDI shiny applications.
+URL: https://github.com/fdiwg/fdishinyr, https://fdiwg.github.io/fdishinyr/
 BugReports: https://github.com/fdiwg/fdishinyr/issues
 License: MIT + file LICENSE
 LazyLoad: yes
